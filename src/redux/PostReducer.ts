@@ -1,6 +1,6 @@
 import { AnyAction, Dispatch } from 'redux'
 import { TPost, TPostForm } from '../components/types'
-
+import axios from 'axios'
 
 export interface PostState {
 	posts: TPost[]
@@ -45,28 +45,32 @@ export const resetForm = () => {
 export const setFormPost = (_id: string) => {
 	return async (dispatch: Dispatch) => {
 		dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'loading' })
-		const { _id, created_at, updated_at, likes, ...formPost } = await new Promise<TPost>((resolve) =>
-			setTimeout(
-				() =>
-					resolve({
-						_id: '1',
-						title: 'title',
-						content: 'content',
-						tags: ['ezjkh', 'ferfe', 'gregrege', 'gergggggge'],
-						image: 'frefiorefeg',
-						created_at: '',
-						updated_at: '',
-						likes: 0,
-					}),
-				1000
-			)
-		)
-		dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'idle' })
-		return dispatch({ type: ActionTypes.SELECT_POST, payload: { _id, form: formPost } })
+		try {
+			const {
+				data: { _id: id, created_at, updated_at, likes, ...formPost },
+			} = await axios.get<TPost>('/posts/' + _id)
+			dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'idle' })
+			return dispatch({ type: ActionTypes.SELECT_POST, payload: { _id, form: formPost } })
+		} catch (error) {
+			console.log(error)
+			dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'failed' })
+		}
 	}
-
 }
 
+export const createPost = (post: TPostForm) => {
+	return async (dispatch: Dispatch) => {
+		dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'loading' })
+		try {
+			const { data } = await axios.post<TPost>('/posts', post)
+			dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'idle' })
+			return dispatch({ type: ActionTypes.CREATE_POST, payload: data })
+		} catch (error) {
+			console.log(error)
+			dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'failed' })
+		}
+	}
+}
 
 const postReducer = (state: PostState = initialState, { type, payload }: AnyAction): PostState => {
 	switch (type) {

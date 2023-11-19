@@ -5,21 +5,33 @@ import { FC, useEffect } from 'react'
 import { TPostForm } from '../types'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
-// import { changeFormVariant, createPost, getPost, updatePost } from '../../redux/PostReducer'
 import { toBase64 } from '../../utils'
-import { resetForm, setFormPost } from '../../redux/PostReducer'
+import { createPost, resetForm, setFormPost, updatePost } from '../../redux/PostReducer'
 
 const PostForm: FC = () => {
 	const { status, variant, value: formValue } = useAppSelector((state) => state.post.form)
 	const dispatch = useAppDispatch()
 
-	const { handleSubmit, control, reset } = useForm<TPostForm>({
+	const {
+		handleSubmit,
+		control,
+		reset,
+		formState: { dirtyFields },
+	} = useForm<TPostForm>({
 		defaultValues: formValue,
-		// reValidateMode: 'onBlur', 'onChange'] ,
 	})
 	const onSubmit: SubmitHandler<TPostForm> = (data) => {
-		// if (variant === 'create') dispatch(createPost(data))
-		// else dispatch(updatePost({ _id: 'sfze', data }))
+		if (variant === 'create') dispatch<any>(createPost(data))
+		else {
+			// get dirty data
+			const dirtyData: Partial<TPostForm> = Object.fromEntries(
+				Object.entries(data).filter(([key]) => dirtyFields[key as keyof TPostForm])
+			)
+			// update post if dirty data is not empty
+			if (Object.keys(dirtyData).length > 0) {
+				dispatch<any>(updatePost(dirtyData))
+			}
+		}
 	}
 
 	useEffect(() => {
@@ -97,7 +109,7 @@ const PostForm: FC = () => {
 									tags.map((tag, index) => <Chip {...getTagProps({ index })} label={tag} />)
 								}
 								renderInput={(params) => (
-									<TextField {...params} error={invalid} helperText={error?.message} />
+									<TextField {...params} error={invalid} helperText={error?.message} placeholder='Example : Sports,Culture' label="Tags" />
 								)}
 								multiple
 								freeSolo
@@ -136,7 +148,6 @@ const PostForm: FC = () => {
 					</Button>
 				</Stack>
 			</form>
-			<Button onClick={() => dispatch<any>( setFormPost('iss'))}>hahaha</Button>
 		</>
 	)
 }

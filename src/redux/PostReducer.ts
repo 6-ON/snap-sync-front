@@ -1,6 +1,7 @@
 import { AnyAction, Dispatch } from 'redux'
 import { TPost, TPostForm } from '../components/types'
 import axios from 'axios'
+import { GetRootState } from './store'
 
 export interface PostState {
 	posts: TPost[]
@@ -47,7 +48,7 @@ export const setFormPost = (_id: string) => {
 		dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'loading' })
 		try {
 			const {
-				data: { _id: id, created_at, updated_at, likes, ...formPost },
+				data: { _id: id, createdAt, updatedAt, likes, ...formPost },
 			} = await axios.get<TPost>('/posts/' + _id)
 			dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'idle' })
 			return dispatch({ type: ActionTypes.SELECT_POST, payload: { _id, form: formPost } })
@@ -58,7 +59,7 @@ export const setFormPost = (_id: string) => {
 	}
 }
 
-export const createPost = (post: Partial<TPostForm> ) => {
+export const createPost = (post: TPostForm) => {
 	return async (dispatch: Dispatch) => {
 		dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'loading' })
 		try {
@@ -71,11 +72,11 @@ export const createPost = (post: Partial<TPostForm> ) => {
 		}
 	}
 }
-export const update = (selectedPost: string, post: TPostForm) => {
-	return async (dispatch: Dispatch) => {
+export const updatePost = (post: Partial<TPostForm>) => {
+	return async (dispatch: Dispatch, getState: GetRootState) => {
 		dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'loading' })
 		try {
-			const { data } = await axios.put<TPost>('/posts' + selectedPost, post)
+			const { data } = await axios.put<TPost>('/posts/' + getState().post.selectedPost, post)
 			dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'idle' })
 			return dispatch({ type: ActionTypes.UPDATE_POST, payload: data })
 		} catch (error) {
@@ -109,7 +110,7 @@ const postReducer = (state: PostState = initialState, { type, payload }: AnyActi
 				},
 			}
 		case ActionTypes.RESET_FORM:
-			return { ...state, form: { ...state.form, value: emptyForm, variant: payload } }
+			return { ...state,selectedPost:null, form: { ...state.form, value: emptyForm, variant: payload } }
 
 		case ActionTypes.GET_POST:
 			return state

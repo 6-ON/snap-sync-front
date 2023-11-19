@@ -58,13 +58,26 @@ export const setFormPost = (_id: string) => {
 	}
 }
 
-export const createPost = (post: TPostForm) => {
+export const createPost = (post: Partial<TPostForm> ) => {
 	return async (dispatch: Dispatch) => {
 		dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'loading' })
 		try {
 			const { data } = await axios.post<TPost>('/posts', post)
 			dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'idle' })
 			return dispatch({ type: ActionTypes.CREATE_POST, payload: data })
+		} catch (error) {
+			console.log(error)
+			dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'failed' })
+		}
+	}
+}
+export const update = (selectedPost: string, post: TPostForm) => {
+	return async (dispatch: Dispatch) => {
+		dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'loading' })
+		try {
+			const { data } = await axios.put<TPost>('/posts' + selectedPost, post)
+			dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'idle' })
+			return dispatch({ type: ActionTypes.UPDATE_POST, payload: data })
 		} catch (error) {
 			console.log(error)
 			dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'failed' })

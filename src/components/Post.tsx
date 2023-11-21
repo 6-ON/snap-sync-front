@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { FC } from 'react';
 import { styled } from '@mui/material/styles';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
@@ -6,10 +6,13 @@ import CardContent from '@mui/material/CardContent';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
-import { Avatar, Button, Chip, Grid, Menu, MenuItem } from '@mui/material/';
+import { Avatar, Button, Chip, Grid, Menu, MenuItem, Stack } from '@mui/material/';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { Delete } from '@mui/icons-material';
+import { TPost } from './types';
+import { useAppDispatch } from '../redux/hooks';
+import { deletepost, likepost, setFormPost, updatePost } from '../redux/PostReducer';
 
 interface ExpandMoreProps extends IconButtonProps {
   expand: boolean;
@@ -25,18 +28,23 @@ const ExpandMore = styled((props: ExpandMoreProps) => {
     duration: theme.transitions.duration.shortest,
   }),
 }));
-export default function PostCard() {
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
+type PostCardProps = {
+  post: TPost
+}
 
-  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+
+const PostCard: FC<PostCardProps> = ({ post }) => {
+  const dispatch = useAppDispatch()
+  const handleMenuClick = () => {
+    dispatch<any>(setFormPost(post._id))
+
   };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
+  const like =()=>{
+    dispatch<any>(likepost(post._id))
+}
+  const deletepst =()=>{
+    dispatch<any>(deletepost(post._id))
+}
   return (
     <Card sx={{ maxWidth: 345, border: '1px solid #ddd', borderRadius: '8px' }}>
       <CardHeader
@@ -46,56 +54,41 @@ export default function PostCard() {
           backgroundPosition: 'center',
           height: 150,
         }}
-        // avatar={<Avatar sx={{ bgcolor: red[500] }}>R</Avatar>}
         action={
           <>
             <IconButton
               aria-label="settings"
               aria-controls="menu-appbar"
               aria-haspopup="true"
-              onClick={handleMenuClick}
+              onClick={()=>handleMenuClick()}
               color="inherit"
             >
-              <MoreHorizIcon sx={{ color: 'white' }} />
+              <MoreHorizIcon  sx={{ color: 'white' }} />
             </IconButton>
-            <Menu
-              id="menu-appbar"
-              anchorEl={anchorEl}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={open}
-              onClose={handleMenuClose}
-            >
-              <MenuItem onClick={handleMenuClose}>Settings</MenuItem>
-              <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-            </Menu>
+
           </>
         }
-        title={<Typography variant="h6" sx={{ color: 'white' }}>Shrimp and Chorizo Paella</Typography>}
-        subheader={<Typography variant="subtitle2" sx={{ color: 'white' }}>September 14, 2016</Typography>}
+        title={<Typography variant="h6" sx={{ color: 'white' }}>{post.title}</Typography>}
+        subheader={<Typography variant="subtitle2" sx={{ color: 'white' }}>{post.createdAt}</Typography>}
       />
       <CardContent>
-        <Chip label="Chip Filled" />
+        <Stack>
+          {post.tags.map((tag,i) => (
+            <Chip key={i} className='w-3/12' label={tag} />
+          ))}
+        </Stack>
         <Typography gutterBottom variant="h5" component="div">
-          Lizard
+        {post.title}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          This impressive paella is a perfect party dish and a fun meal to cook
-          together with your guests. Add 1 cup of frozen peas along with the mussels,
-          if you like.
+        {post.content}
         </Typography>
       </CardContent>
       <Grid container justifyContent="space-between" sx={{ padding: '10px 8px' }}>
-        <Button startIcon={<ThumbUpIcon />}>Like 0</Button>
-        <Button startIcon={<Delete />}>Delete</Button>
+        <Button  onClick={()=>like()} startIcon={<ThumbUpIcon />}>Like {post.likes}</Button>
+        <Button onClick={()=>deletepst()} startIcon={<Delete />}>Delete</Button>
       </Grid>
     </Card>
   );
 }
+export default PostCard

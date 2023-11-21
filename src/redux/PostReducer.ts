@@ -14,7 +14,7 @@ export interface PostFormState {
 	variant: 'create' | 'update'
 }
 
-const emptyForm: TPostForm = { title: '', content: '', tags: [], image: '' }
+export const emptyForm: TPostForm = { title: '', content: '', tags: [], image: '' }
 
 const initialState: PostState = {
 	posts: [],

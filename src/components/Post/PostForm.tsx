@@ -6,7 +6,7 @@ import { TPostForm } from '../types'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { toBase64 } from '../../utils'
-import { createPost, resetForm, setFormPost, updatePost } from '../../redux/PostReducer'
+import { createPost, emptyForm, resetForm, updatePost } from '../../redux/PostReducer'
 
 const PostForm: FC = () => {
 	const { status, variant, value: formValue } = useAppSelector((state) => state.post.form)
@@ -19,6 +19,7 @@ const PostForm: FC = () => {
 		formState: { dirtyFields },
 	} = useForm<TPostForm>({
 		defaultValues: formValue,
+		mode: 'onTouched',
 	})
 	const onSubmit: SubmitHandler<TPostForm> = (data) => {
 		if (variant === 'create') dispatch<any>(createPost(data))
@@ -109,7 +110,13 @@ const PostForm: FC = () => {
 									tags.map((tag, index) => <Chip {...getTagProps({ index })} label={tag} />)
 								}
 								renderInput={(params) => (
-									<TextField {...params} error={invalid} helperText={error?.message} placeholder='Example : Sports,Culture' label="Tags" />
+									<TextField
+										{...params}
+										error={invalid}
+										helperText={error?.message}
+										placeholder="Example : Sports,Culture"
+										label="Tags"
+									/>
 								)}
 								multiple
 								freeSolo
@@ -125,8 +132,12 @@ const PostForm: FC = () => {
 						}}
 						render={({ field, fieldState }) => (
 							<>
-								<Button component="label" variant="contained" startIcon={<CloudUpload />}>
-									{field.value ? 'Change file' : 'Upload file'}
+								<Button
+									component="label"
+									variant="contained"
+									startIcon={<CloudUpload />}
+								>
+									{fieldState.isDirty ? 'Change file' : 'Upload file'}
 									<input
 										hidden
 										type="file"
@@ -143,7 +154,7 @@ const PostForm: FC = () => {
 					<Button variant="contained" type="submit">
 						Submit
 					</Button>
-					<Button variant="contained" onClick={() => dispatch(resetForm())} color="error">
+					<Button variant="contained" onClick={() => [reset(emptyForm),dispatch(resetForm())]} color="error">
 						Clear
 					</Button>
 				</Stack>

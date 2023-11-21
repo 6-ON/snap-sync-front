@@ -72,6 +72,17 @@ export const createPost = (post: TPostForm) => {
 		}
 	}
 }
+export const deletepost = (id: string) => {
+	return async (dispatch: Dispatch) => {
+		try {
+			await axios.delete<TPost>('/posts/' + id)
+			return dispatch({ type: ActionTypes.DELETE_POST, payload: id })
+		} catch (error) {
+			console.log(error)
+
+		}
+	}
+}
 export const updatePost = (post: Partial<TPostForm>) => {
 	return async (dispatch: Dispatch, getState: GetRootState) => {
 		dispatch({ type: ActionTypes.CHANGE_FORM_STATUS, payload: 'loading' })
@@ -85,6 +96,32 @@ export const updatePost = (post: Partial<TPostForm>) => {
 		}
 	}
 }
+export const getposts = () => {
+	return async (dispatch: Dispatch) => {
+
+		try {
+			const { data } = await axios.get<TPost[]>('/posts')
+			dispatch({ type: ActionTypes.GET_POSTS, payload: data })
+
+		} catch (error) {
+			console.log(error)
+
+		}
+	}
+}
+export const likepost = (id: string) => {
+	return async (dispatch: Dispatch) => {
+
+		try {
+			const { data } = await axios.patch<TPost[]>('/posts/' + id)
+			dispatch({ type: ActionTypes.LIKE_POST, payload: data })
+
+		} catch (error) {
+			console.log(error)
+
+		}
+	}
+}
 
 const postReducer = (state: PostState = initialState, { type, payload }: AnyAction): PostState => {
 	switch (type) {
@@ -92,6 +129,17 @@ const postReducer = (state: PostState = initialState, { type, payload }: AnyActi
 			return {
 				...state,
 				posts: [...state.posts, payload],
+			}
+		case ActionTypes.GET_POSTS:
+			return {
+				...state,
+				posts: payload,
+
+			}
+		case ActionTypes.LIKE_POST:
+			return {
+				...state,
+				posts: state.posts.map((post) => (post._id === payload._id ? payload : post)),
 			}
 
 		case ActionTypes.UPDATE_POST:
@@ -110,12 +158,12 @@ const postReducer = (state: PostState = initialState, { type, payload }: AnyActi
 				},
 			}
 		case ActionTypes.RESET_FORM:
-			return { ...state,selectedPost:null, form: { ...state.form, value: emptyForm, variant: payload } }
+			return { ...state, selectedPost: null, form: { ...state.form, value: emptyForm, variant: payload } }
 
 		case ActionTypes.GET_POST:
 			return state
 		case ActionTypes.DELETE_POST:
-			return { ...state, posts: state.posts.filter(({ _id }) => _id !== payload.id) }
+			return { ...state, posts: state.posts.filter(({ _id }) => _id !== payload) }
 		case ActionTypes.CHANGE_FORM_STATUS:
 			return { ...state, form: { ...state.form, status: payload } }
 

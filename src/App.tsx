@@ -23,11 +23,15 @@ function App() {
 				</div>
 			</div>
 			<Stack direction={isSmallScreen ? 'column' : 'row'}>
-				<Stack className='mx-10' direction={'row'} sx={{ flex: 2 }} flexWrap={'wrap'} gap={'1rem'}>
+					<div className="w-2/3 min-w-2/3 flex justify-around flex-wrap gap-4 ">
+
 					{posts.map((post, i) => (
-						<PostCard post={post} key={i} />
+						<div className=''>
+
+							<PostCard  post={post} key={i} />
+						</div>
 					))}
-				</Stack>
+					</div>
 				<Container sx={{ position: 'relative', flex: 1 }}>
 					<PostForm />
 				</Container>

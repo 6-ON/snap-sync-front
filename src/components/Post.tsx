@@ -6,7 +6,7 @@ import CardContent from '@mui/material/CardContent';
 import IconButton, { IconButtonProps } from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import { red } from '@mui/material/colors';
-import { Avatar, Button, Chip, Grid, Menu, MenuItem, Stack } from '@mui/material/';
+import { Avatar, Button, Chip, Grid } from '@mui/material/';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import { Delete } from '@mui/icons-material';
@@ -49,7 +49,7 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
     <Card sx={{ maxWidth: 345, border: '1px solid #ddd', borderRadius: '8px' }}>
       <CardHeader
         sx={{
-          backgroundImage: 'linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),url("https://picsum.photos/200")',
+          backgroundImage: `linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),url("${post.image}")`,
           backgroundSize: 'cover',
           backgroundPosition: 'center',
           height: 150,
@@ -72,11 +72,11 @@ const PostCard: FC<PostCardProps> = ({ post }) => {
         subheader={<Typography variant="subtitle2" sx={{ color: 'white' }}>{post.createdAt}</Typography>}
       />
       <CardContent>
-        <Stack>
+        <div className='flex flex-wrap gap-1'>
           {post.tags.map((tag,i) => (
             <Chip key={i} className='w-3/12' label={tag} />
           ))}
-        </Stack>
+        </div>
         <Typography gutterBottom variant="h5" component="div">
         {post.title}
         </Typography>

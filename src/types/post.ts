@@ -7,7 +7,16 @@ export type TPostForm =  {
 
 export type TPost = TPostForm & {
     _id: string
+    creator: TUser
     createdAt: string
     updatedAt: string
-    likes: number
+    likes: string[]
+}
+export type TUser = {
+    _id: string
+    name: string
+    email: string
+    createdAt: string
+    updatedAt: string
+    posts?: TPost[]
 }

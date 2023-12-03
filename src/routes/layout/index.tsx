@@ -1,19 +1,23 @@
-import { FC, Suspense } from 'react'
+import { FC, Suspense, useEffect } from 'react'
 import { LayoutRoute } from './types'
 import { Route } from 'react-router-dom'
 import PrivateRoute from '../PrivateRoute'
-import { Backdrop, CircularProgress } from '@mui/material'
+import nprogres from 'nprogress'
 
-const Loader = (
-	<Backdrop sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }} open>
-		<CircularProgress color="inherit" />
-	</Backdrop>
-)
+const Loader = () => {
+	useEffect(() => {
+		nprogres.start()
+		return () => {
+			nprogres.done()
+		}
+	}, [])
+	return <></>
+}
 
 const Layout: FC<LayoutRoute> = ({ layout: LayoutComponent, routes }) => {
-	const paths = routes.map(({ path }) => path)
+	// const paths = routes.map(({ path }) => path)
 	return (
-		<Suspense fallback={Loader}>
+		<Suspense fallback={<Loader />}>
 			<LayoutComponent>
 				{routes.map(({ isPrivate, ...props }) =>
 					isPrivate ? (

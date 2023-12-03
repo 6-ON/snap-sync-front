@@ -1,9 +1,9 @@
 import React from 'react'
 import { Redirect, RouteProps } from 'react-router-dom'
+import { useUser } from '../hooks'
 
 const PrivateRoute: React.FC<RouteProps> = ({ children, ...props }) => {
-	const isAuth = false
-	console.log('isAuth', isAuth);
+	const isAuth = useUser()
 	
 	return isAuth ? <>{children}</> : <Redirect to="/login" />
 }

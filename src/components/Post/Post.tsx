@@ -30,7 +30,7 @@ const PostCard: FC<PostCardProps> = ({ post, isMine, isLiked }) => {
 	const toggleShowFullContent = () => setShowFullContent(!showFullContent)
 
 	return (
-		<Card sx={{ maxWidth: 300, minWidth: 300 }}>
+		<Card sx={{ maxWidth: 300, minWidth: 300 ,borderRadius:"1rem"}}>
 			<CardHeader
 				sx={{
 					backgroundImage: `linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)),url("${post.image}")`,
@@ -64,7 +64,7 @@ const PostCard: FC<PostCardProps> = ({ post, isMine, isLiked }) => {
 				}
 			/>
 			<CardContent>
-				<div className="flex flex-wrap">
+				<div className="flex gap-2 flex-wrap">
 					{post.tags.map((tag, i) => (
 						<Chip key={i} className="w-3/12" label={tag} />
 					))}

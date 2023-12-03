@@ -13,12 +13,12 @@ const initialState: PostState = {
 	selectedPost: null,
 }
 
-const postReducer = (state: PostState = initialState, { type, payload }: TPostAction): PostState => {
+export const postReducer = (state: PostState = initialState, { type, payload }: TPostAction): PostState => {
 	switch (type) {
 		case PostAT.CREATE_POST:
 			return {
 				...state,
-				posts: [...state.posts, payload],
+				posts: [payload,...state.posts],
 			}
 		case PostAT.GET_POSTS:
 			return {
@@ -62,5 +62,3 @@ const postReducer = (state: PostState = initialState, { type, payload }: TPostAc
 			return state
 	}
 }
-
-export default postReducer

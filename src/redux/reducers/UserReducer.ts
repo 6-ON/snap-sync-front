@@ -8,6 +8,7 @@ export function userReducer(state: UserState = initialState, { type, payload }: 
 	switch (type) {
 		case UserAT.GET_USER:
 		case UserAT.AUTH:
+			localStorage.setItem('isLoggedIn','yessiir')
 			return {
 				...state,
 				user: payload,
@@ -15,6 +16,7 @@ export function userReducer(state: UserState = initialState, { type, payload }: 
 		case UserAT.LOGOUT:
 			localStorage.removeItem('access_token')
 			localStorage.removeItem('refresh_token')
+			localStorage.removeItem('isLoggedIn')
 			return {
 				...state,
 				user: null,

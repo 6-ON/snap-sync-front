@@ -1,10 +1,11 @@
 import { Action, applyMiddleware, combineReducers, createStore } from 'redux'
 import thunk, { ThunkAction } from 'redux-thunk'
-import postReducer from './PostReducer'
+import { userReducer, postReducer } from './reducers'
 import { composeWithDevTools } from '@redux-devtools/extension'
 
 const rootReducer = combineReducers({
 	post: postReducer,
+	user: userReducer,
 })
 const store = createStore(rootReducer, composeWithDevTools(applyMiddleware(thunk)))
 export type GetRootState = typeof store.getState

@@ -2,11 +2,12 @@
 import { CloudUpload } from '@mui/icons-material'
 import { Autocomplete, Backdrop, Button, Chip, CircularProgress, Stack, TextField, Typography } from '@mui/material'
 import { FC, useEffect } from 'react'
-import { TPostForm } from '../types'
+import { TPostForm } from '../../types'
 import { Controller, SubmitHandler, useForm } from 'react-hook-form'
 import { useAppDispatch, useAppSelector } from '../../redux/hooks'
 import { toBase64 } from '../../utils'
-import { createPost, emptyForm, resetForm, updatePost } from '../../redux/PostReducer'
+import { createPostThunk, resetForm, updatePostThunk } from '../../redux/actions'
+import { emptyForm } from '../../redux/reducers/PostReducer'
 
 const PostForm: FC = () => {
 	const { status, variant, value: formValue } = useAppSelector((state) => state.post.form)
@@ -22,7 +23,7 @@ const PostForm: FC = () => {
 		mode: 'onTouched',
 	})
 	const onSubmit: SubmitHandler<TPostForm> = (data) => {
-		if (variant === 'create') dispatch<any>(createPost(data))
+		if (variant === 'create') dispatch<any>(createPostThunk(data))
 		else {
 			// get dirty data
 			const dirtyData: Partial<TPostForm> = Object.fromEntries(
@@ -30,9 +31,10 @@ const PostForm: FC = () => {
 			)
 			// update post if dirty data is not empty
 			if (Object.keys(dirtyData).length > 0) {
-				dispatch<any>(updatePost(dirtyData))
+				dispatch<any>(updatePostThunk(dirtyData))
 			}
 		}
+		reset(emptyForm)
 	}
 
 	useEffect(() => {

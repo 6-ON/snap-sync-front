@@ -38,7 +38,7 @@ export type TPostAction =
 	| { type: PostAT.SELECT_POST; payload: { id: string; form: TPostForm } }
 	| { type: PostAT.RESET_FORM; payload: PostFormVariant }
 	| { type: PostAT.GET_POSTS; payload: TPost[] }
-	| { type: PostAT.LIKE_POST; payload: { id: string; likes:TPost["likes"] } }
+	| { type: PostAT.LIKE_POST; payload: { id: string; likes: TPost['likes'] } }
 	| { type: PostAT.CHANGE_FORM_STATUS; payload: TStatus }
 
 // --------------------------------- User Types ---------------------------------
@@ -52,7 +52,7 @@ export enum UserAT {
 	GET_USER = 'user/GET_USER',
 	CHANGE_STATUS = 'user/CHANGE_STATUS',
 }
-export type Tokens = { user:TUser; auth:{ access_tocken: string; refresh_token: string} }
+export type Tokens = { user: TUser; auth: { access_tocken: string; refresh_token: string } }
 export type TUserAction =
 	| { type: UserAT.AUTH | UserAT.GET_USER; payload: TUser }
 	| { type: UserAT.LOGOUT; payload?: undefined }

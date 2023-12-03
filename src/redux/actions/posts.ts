@@ -45,7 +45,6 @@ export const setFormPostThunk = (_id: string) => {
 			dispatch(selectPost(post))
 			dispatch(changeFormStatus('idle'))
 		} catch (error) {
-			console.log(error)
 			dispatch(changeFormStatus('failed'))
 		}
 	}
@@ -59,7 +58,6 @@ export const createPostThunk = (post: TPostForm) => {
 			dispatch(createPost(data))
 			dispatch(changeFormStatus('idle'))
 		} catch (error) {
-			console.log(error)
 			dispatch(changeFormStatus('failed'))
 		}
 	}
@@ -70,7 +68,6 @@ export const deletePostThunk = (id: string) => {
 			await axios.delete<TPost>('/posts/' + id)
 			return dispatch(deletePost(id))
 		} catch (error) {
-			console.log(error)
 		}
 	}
 }
@@ -81,9 +78,9 @@ export const updatePostThunk = (updates: Partial<TPostForm>) => {
 			const selectedId = getState().post.selectedPost
 			await axios.put('/posts/' + selectedId, updates)
 			dispatch(updatePost(updates))
+			dispatch(resetForm())
 			dispatch(changeFormStatus('idle'))
 		} catch (error) {
-			console.log(error)
 			dispatch(changeFormStatus('failed'))
 		}
 	}
@@ -94,7 +91,6 @@ export const getPostsThunk = () => {
 			const { data: posts } = await axios.get<TPost[]>('/posts')
 			dispatch(getPosts(posts))
 		} catch (error) {
-			console.log(error)
 		}
 	}
 }
@@ -105,7 +101,6 @@ export const likePostThunk = (id: string, isLike: boolean) => {
 
 			dispatch(likePost(id, likes))
 		} catch (error) {
-			console.log(error)
 		}
 	}
 }

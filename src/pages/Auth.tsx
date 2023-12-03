@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { Link,useHistory, useRouteMatch } from 'react-router-dom'
+import { Link, useHistory, useRouteMatch } from 'react-router-dom'
 import { useTitle } from '../hooks'
 import { LockOutlined } from '@mui/icons-material'
 import { Container, CssBaseline, Box, Avatar, Typography, Button, Grid } from '@mui/material'
@@ -7,9 +7,11 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { Input } from '../components/Form/'
 import Joi from 'joi'
 import { joiResolver } from '@hookform/resolvers/joi'
-import { useAppDispatch, useAppSelector } from '../redux/hooks'
-import { loginThunk, registerThunk } from '../redux/actions'
+import { useAppDispatch } from '../redux/hooks'
+import { googleAuthThunk, loginThunk, registerThunk } from '../redux/actions'
 import { TRegisterForm } from '../types'
+import { useUser } from '../hooks'
+import { GoogleLogin, GoogleOAuthProvider } from '@react-oauth/google'
 
 type TForm = {
 	email: string
@@ -33,23 +35,21 @@ const registerSchema = loginSchema.keys({
 	lastName: Joi.string().required(),
 })
 
-const Auth = () => {
+const AuthPage = () => {
 	const history = useHistory()
-	const user = useAppSelector((state) => state.user.user)
+	const user = useUser()
 
 	useEffect(() => {
 		user && history.push('/')
 	}, [user, history])
 
+	useTitle('Authentification')
 
 	const dispatch = useAppDispatch()
-	useTitle('Authentification')
+
 	const isLogin = useRouteMatch('/login')?.isExact
-	const {
-		control,
-		handleSubmit,
-		reset,
-	} = useForm<TForm>({
+
+	const { control, handleSubmit, reset } = useForm<TForm>({
 		resolver: joiResolver(isLogin ? loginSchema : registerSchema),
 		mode: 'onTouched',
 		defaultValues: { email: '', password: '', firstName: '', lastName: '', confirmPassword: '' },
@@ -121,6 +121,16 @@ const Auth = () => {
 								</Typography>
 							)}
 						</Grid>
+						<GoogleLogin
+							onSuccess={(credentialResponse) => {
+								dispatch<any>(googleAuthThunk(credentialResponse))
+							}}
+							onError={() => {
+								console.log('Login Failed')
+							}}
+							useOneTap
+						/>
+						;
 					</Grid>
 				</Box>
 			</Box>
@@ -128,4 +138,16 @@ const Auth = () => {
 	)
 }
 
+
+
+function Auth () {
+	return (
+		<>
+			<GoogleOAuthProvider clientId={process.env.REACT_APP_GOOGLE_AUTH_CLIENT_ID!}>
+				<AuthPage />
+			</GoogleOAuthProvider>
+			;
+		</>
+	)
+}
 export default Auth
